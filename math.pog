@@ -1,9 +1,27 @@
-mult num1 int num2 int ret int macro
+retmult num1 int num2 int ret int macro
 mut finalresult 0 set
 mut iterate 0 set
 iterate < num2 while
 finalresult num1 add
 iterate 1 add
 end
+finalresult return
+endmac
+retadd num1 int num2 int ret int macro
+mut finalresult 0 set
+finalresult num1 add
+finalresult num2 add
+finalresult return
+endmac
+retsub num1 int num2 int ret int macro
+mut finalresult 0 set
+finalresult num1 add
+finalresult num2 sub
+finalresult return
+endmac
+retdiv num1 int num2 int ret int macro
+mut finalresult 0 set
+finalresult num1 add
+finalresult num2 div
 finalresult return
 endmac

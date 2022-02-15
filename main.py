@@ -1,14 +1,26 @@
-import os
+import sys,os
 global toinclude
 global included
+global linenumber
+global currentfile
+linenumber = 0
 included = []
 def transpile(line,file):
     global variables
     global toinclude
     global included
+    global currentfile
+    global linenumber
     f = file
     x = line.split()
     command = x[len(x)-1]
+    try:
+        if sys.argv[2] == "debugcom":
+            f.write(f"//file: {currentfile}, line: {linenumber}, {command}")
+            if command != "include":
+                f.write("\n")
+    except:
+        pass
     if command == "print":
         try:
             length = variables[x[0]]["length"]
@@ -39,10 +51,17 @@ def transpile(line,file):
             else:
                 f.write(f"let {x[0]}={x[1]};")
         except:
+            string = ""
+            length = 0
+            for _ in range(len(x)-1):
+                if x[0] == "mut": length = 1
+                if _ != length:
+                    string+=(str(x[_]))
+                if _ < len(x)-2 and _ != 0 : string+=" "
             if x[0] == "mut":
-                f.write(f'let mut {x[1]}="{x[2]}";')
+                f.write(f'let mut {x[1]}="{string}";')
             else:
-                f.write(f'let {x[0]}="{x[1]}";')
+                f.write(f'let {x[0]}="{string}";')
         if x[0] == "mut":
             variables.update({
             x[1]:{
@@ -59,9 +78,12 @@ def transpile(line,file):
         f.write(f"{x[0]}+={x[1]};")
     elif command == "sub":
         f.write(f"{x[0]}-={x[1]};")
+    elif command == "div":
+        f.write(f"{x[0]}/={x[1]};")
     elif command == "if":
         f.write(f"if {x[0]} == {x[1]}"+" {")
-
+    elif command == "else":
+        f.write("else {")
     elif command == "end":
         f.write("}")
     elif command == "while":
@@ -140,8 +162,11 @@ def transpile(line,file):
             iterate+=1
         f.write(");")
     f.write("\n")
+    linenumber+=1
 with open('out.rs',"w") as f:
-    with open('code.pog') as code:
+    with open(sys.argv[1]) as code:
+        linenumber = 0
+        currentfile = code.name
         variables = {}
         macros = {}
         toinclude = []
@@ -159,6 +184,8 @@ with open('out.rs',"w") as f:
             with open(x) as include:
                 for x in toinclude:
                     with open(x) as includefile:
+                        currentfile = includefile.name
+                        linenumber = 0
                         for _ in includefile.readlines():
                             _unsplit = _
                             _=_.split()

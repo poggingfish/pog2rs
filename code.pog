@@ -1,5 +1,10 @@
 std.pog include
 math.pog include
-hi mult 10 1 setret
-hi print
-\n print
+number retmult 10 10 setret
+number printint
+number retadd 10 10 setret
+number printint
+number retdiv 10 2 setret
+number printint
+number retsub 5 5 setret
+number printint
