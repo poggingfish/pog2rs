@@ -6,3 +6,16 @@ printint pog int macro
 pog print
 \n print
 endmac
+triangle length int macro
+mut iterate 1 set
+mut iterate2 0 set
+iterate < length while
+iterate2 < iterate while
+* print
+iterate2 1 add
+end
+iterate 1 add
+iterate2 iterate2 sub
+\n print
+end
+endmac

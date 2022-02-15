@@ -1,4 +1,2 @@
 std.pog include
-hello print
-\n print
-hello println
+10 triangle
