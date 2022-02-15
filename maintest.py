@@ -1,6 +1,11 @@
 import os
+global toinclude
+global included
+included = []
 def transpile(line,file):
     global variables
+    global toinclude
+    global included
     f = file
     x = line.split()
     command = x[len(x)-1]
@@ -66,6 +71,12 @@ def transpile(line,file):
             f.write(f"while {x[0]} > {x[2]}"+" {")
         if x[1] == "<":
             f.write(f"while {x[0]} < {x[2]}"+" {")
+    elif command == "include":
+        if x[0] not in included:
+            toinclude.append(x[0])
+            included.append(x[0])
+        else:
+            pass
     else:
         iterate = 0
         f.write(f"{command}(")
@@ -87,13 +98,10 @@ with open('out.rs',"w") as f:
         variables = {}
         macros = {}
         toinclude = []
-        #f.write("#!{ignore[warnings]}\n")
+        f.write("#![allow(warnings)]\n")
         f.write("fn main() {\n")
         for x in code.readlines():
-            if x.split()[len(x.split())-1] != "include":
-                transpile(x,f)
-            else:
-                toinclude.append(x.split()[0])
+            transpile(x,f)
         f.write("}\n")
         for x in toinclude:
             for _ in x:
@@ -120,7 +128,6 @@ with open('out.rs',"w") as f:
                                     x[0]:{
                                     "vartypes": macvar
                                     }})
-                                print(macvar)
                                 macvar=[]
                                 for variter in macros[x[0]]["vartypes"]:
                                     if variter == "int":
@@ -129,7 +136,7 @@ with open('out.rs',"w") as f:
                                         f.write("&str,")
                                     else:
                                         variables.update({
-                                        variter:{ 
+                                        variter:{
                                             "length": 2
                                         }})
                                         f.write(f"{variter}: ")
@@ -138,8 +145,8 @@ with open('out.rs',"w") as f:
                                 f.write("}\n")
                             else:
                                 transpile(_unsplit,f)
-        print(toinclude)
-print("Compiling")
+                toinclude.remove(x)
+
 print("Compiling")
 os.system("rustc out.rs")
 print("Running")

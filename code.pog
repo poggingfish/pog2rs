@@ -1,3 +1,4 @@
 std.pog include
 hello Hello, world! set
 hello print
+\n print
