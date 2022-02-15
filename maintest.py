@@ -127,6 +127,10 @@ with open('out.rs',"w") as f:
                                     elif variter == "str":
                                         f.write("&str,")
                                     else:
+                                        variables.update({
+                                        variter:{ 
+                                            "length": 2
+                                        }})
                                         f.write(f"{variter}: ")
                                 f.write("){\n")
                             elif command == "endmac":
