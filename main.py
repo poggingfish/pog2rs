@@ -3,13 +3,16 @@ global toinclude
 global included
 global linenumber
 global currentfile
+global used
 linenumber = 0
+used = []
 included = []
 def transpile(line,file):
     global variables
     global toinclude
     global included
     global currentfile
+    global used
     global linenumber
     f = file
     x = line.split()
@@ -109,7 +112,10 @@ def transpile(line,file):
             else:
                 f.write(f'return "{x[0]}"')
     elif command == "setret":
+        print(used)
+        print(x)
         if x[0] != "mut":
+            used.append(x[1])
             f.write(f"let {x[0]} = {x[1]}(")
             variables.update({
                 x[0]:{
@@ -117,7 +123,8 @@ def transpile(line,file):
                 }
             })
         else:
-            f.write(f"let mut {x[1]} == {x2}(")
+            used.append(x[2])
+            f.write(f"let mut {x[1]} == {x[2]}(")
             variables.update({
             x[0]:{
                 "length": 3
@@ -144,10 +151,10 @@ def transpile(line,file):
                         except:
                             f.write(f'"{_}",')
                 iterate+=1
-
         f.write(");")
     else:
         iterate = 0
+        used.append(command)
         f.write(f"{command}(")
         for _ in x:
             if iterate != len(x)-1:
@@ -162,7 +169,6 @@ def transpile(line,file):
             iterate+=1
         f.write(");")
     f.write("\n")
-    linenumber+=1
 with open('out.rs',"w") as f:
     with open(sys.argv[1]) as code:
         linenumber = 0
@@ -170,9 +176,10 @@ with open('out.rs',"w") as f:
         variables = {}
         macros = {}
         toinclude = []
-        f.write("#![allow(warnings)]\n")
+        #f.write("#![allow(warnings)]\n")
         f.write("fn main() {\n")
         for x in code.readlines():
+            linenumber+=1
             transpile(x,f)
         f.write("}\n")
         for x in toinclude:
@@ -187,48 +194,56 @@ with open('out.rs',"w") as f:
                         currentfile = includefile.name
                         linenumber = 0
                         for _ in includefile.readlines():
+                            linenumber+=1
                             _unsplit = _
                             _=_.split()
                             command=_[len(_)-1]
                             if command == "macro":
-                                macvar = []
-                                f.write(f"fn {_[0]}(")
-                                iterate = 0
-                                for variter in _:
-                                    if iterate != 0 and iterate != len(_)-1:
-                                        macvar.append(_[iterate])
-                                    iterate+=1
-                                macros.update({
-                                    x[0]:{
-                                    "vartypes": macvar
-                                    }})
-                                ret=False
-                                macvar=[]
-                                for variter in macros[x[0]]["vartypes"]:
-                                    if variter == "int":
-                                        f.write("i32")
-                                        if ret != True:
-                                            f.write(",")
-                                    elif variter == "str":
-                                        f.write("&str")
-                                        if ret != True:
-                                            f.write(",")
-                                    elif variter == "ret":
-                                        f.write(") -> ")
-                                        ret = True
-                                    elif variter == "noret":
-                                        f.write(")")
-                                    else:
-                                        variables.update({
-                                        variter:{
-                                            "length": 2
+                                currentmac = _[0]
+                                if currentmac in used:
+                                    macvar = []
+                                    f.write(f"fn {_[0]}(")
+                                    iterate = 0
+                                    for variter in _:
+                                        if iterate != 0 and iterate != len(_)-1:
+                                            macvar.append(_[iterate])
+                                        iterate+=1
+                                    macros.update({
+                                        x[0]:{
+                                        "vartypes": macvar
                                         }})
-                                        f.write(f"{variter}: ")
-                                f.write("{\n")
+                                    ret=False
+                                    macvar=[]
+                                    for variter in macros[x[0]]["vartypes"]:
+                                        if variter == "int":
+                                            f.write("i32")
+                                            if ret != True:
+                                                f.write(",")
+                                        elif variter == "str":
+                                            f.write("&str")
+                                            if ret != True:
+                                                f.write(",")
+                                        elif variter == "ret":
+                                            f.write(") -> ")
+                                            ret = True
+                                        elif variter == "noret":
+                                            f.write(")")
+                                        else:
+                                            variables.update({
+                                            variter:{
+                                                "length": 2
+                                            }})
+                                            f.write(f"{variter}: ")
+                                    f.write("{\n")
                             elif command == "endmac":
-                                f.write("}\n")
+                                if currentmac in used:
+                                    f.write("}\n")
                             else:
-                                transpile(_unsplit,f)
+                                try:
+                                    if currentmac in used:
+                                        transpile(_unsplit,f)
+                                except:
+                                    transpile(_unsplit,f)
                 toinclude.remove(x)
 
 print("Compiling")

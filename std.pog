@@ -1,4 +1,3 @@
-math.pog include
 println string str noret macro
 string print
 \n print
