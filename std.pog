@@ -1,0 +1,8 @@
+println string str macro
+string print
+\n print
+endmac
+printint pog int macro
+pog print
+\n print
+endmac
