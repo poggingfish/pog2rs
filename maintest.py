@@ -80,13 +80,14 @@ def transpile(line,file):
                     except:
                         f.write(f'"{_}"')
             iterate+=1
-        f.write(")")
+        f.write(");")
     f.write("\n")
 with open('out.rs',"w") as f:
     with open('code.pog') as code:
         variables = {}
         macros = {}
         toinclude = []
+        #f.write("#!{ignore[warnings]}\n")
         f.write("fn main() {\n")
         for x in code.readlines():
             if x.split()[len(x.split())-1] != "include":
