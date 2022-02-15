@@ -1,4 +1,5 @@
 std.pog include
-hello Hello, world! set
-hello print
+math.pog include
+hi mult 10 1 setret
+hi print
 \n print

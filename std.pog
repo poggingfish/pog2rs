@@ -1,13 +1,13 @@
 math.pog include
-println string str macro
+println string str noret macro
 string print
 \n print
 endmac
-printint pog int macro
+printint pog int noret macro
 pog print
 \n print
 endmac
-triangle length int macro
+triangle length int noret macro
 mut iterate 1 set
 mut iterate2 0 set
 iterate < length while

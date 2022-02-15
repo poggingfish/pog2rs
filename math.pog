@@ -1,3 +1,9 @@
-printsomething string str macro
-string print
+mult num1 int num2 int ret int macro
+mut finalresult 0 set
+mut iterate 0 set
+iterate < num2 while
+finalresult num1 add
+iterate 1 add
+end
+finalresult return
 endmac

@@ -77,6 +77,53 @@ def transpile(line,file):
             included.append(x[0])
         else:
             pass
+    elif command == "return":
+        try:
+            int(x[0])
+            f.write(f"return {x[0]}")
+        except:
+            if x[0] in variables:
+                f.write(f"return {x[0]}")
+            else:
+                f.write(f'return "{x[0]}"')
+    elif command == "setret":
+        if x[0] != "mut":
+            f.write(f"let {x[0]} = {x[1]}(")
+            variables.update({
+                x[0]:{
+                    "length": 2
+                }
+            })
+        else:
+            f.write(f"let mut {x[1]} == {x2}(")
+            variables.update({
+            x[0]:{
+                "length": 3
+            }
+            })
+        iterate = 0
+        for _ in x:
+            if x[0] == "mut":
+                length_of = 4
+            else:
+                length_of = 3
+            if len(x) == length_of:
+                pass
+            else:
+                if x[0] == "mut": length=3
+                else: length=2
+                if iterate >= length and iterate != len(x)-1 and _ != x[0]:
+                    if _ in variables:
+                        f.write(_+",")
+                    else:
+                        try:
+                            int(_)
+                            f.write(_+",")
+                        except:
+                            f.write(f'"{_}",')
+                iterate+=1
+
+        f.write(");")
     else:
         iterate = 0
         f.write(f"{command}(")
@@ -128,19 +175,29 @@ with open('out.rs',"w") as f:
                                     x[0]:{
                                     "vartypes": macvar
                                     }})
+                                ret=False
                                 macvar=[]
                                 for variter in macros[x[0]]["vartypes"]:
                                     if variter == "int":
-                                        f.write("i32,")
+                                        f.write("i32")
+                                        if ret != True:
+                                            f.write(",")
                                     elif variter == "str":
-                                        f.write("&str,")
+                                        f.write("&str")
+                                        if ret != True:
+                                            f.write(",")
+                                    elif variter == "ret":
+                                        f.write(") -> ")
+                                        ret = True
+                                    elif variter == "noret":
+                                        f.write(")")
                                     else:
                                         variables.update({
                                         variter:{
                                             "length": 2
                                         }})
                                         f.write(f"{variter}: ")
-                                f.write("){\n")
+                                f.write("{\n")
                             elif command == "endmac":
                                 f.write("}\n")
                             else:
