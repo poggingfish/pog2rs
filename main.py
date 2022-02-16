@@ -1,4 +1,4 @@
-import sys,os
+import sys,os, time
 global toinclude
 global included
 global linenumber
@@ -7,6 +7,7 @@ global used
 linenumber = 0
 used = []
 included = []
+firsttime = time.perf_counter()
 def transpile(line,file):
     global variables
     global toinclude
@@ -19,7 +20,7 @@ def transpile(line,file):
     command = x[len(x)-1]
     try:
         if sys.argv[2] == "debugcom":
-            f.write(f"//file: {currentfile}, line: {linenumber}, {command}")
+            f.write(f"//file: {currentfile}, line: {linenumber}, command: {command}")
             if command != "include":f.write("\n")
     except:
         pass
@@ -47,7 +48,13 @@ def transpile(line,file):
             try:
                 int(x[1])
             except:
-                int(x[2])
+                try:
+                    int(x[2])
+                except:
+                    try:
+                        variables[x[1]]
+                    except:
+                        variables[x[2]]
             if x[0] == "mut":
                 f.write(f"let mut {x[1]}={x[2]};")
             else:
@@ -57,9 +64,9 @@ def transpile(line,file):
             length = 0
             for _ in range(len(x)-1):
                 if x[0] == "mut": length = 1
-                if _ != length:
+                if _ > length:
                     string+=(str(x[_]))
-                if _ < len(x)-2 and _ != 0 : string+=" "
+                if _ < len(x)-2 and _ > length: string+=" "
             if x[0] == "mut":
                 f.write(f'let mut {x[1]}="{string}";')
             else:
@@ -126,7 +133,7 @@ def transpile(line,file):
             })
         else:
             used.append(x[2])
-            f.write(f"let mut {x[1]} == {x[2]}(")
+            f.write(f"let mut {x[1]} = {x[2]}(")
             variables.update({
             x[0]:{
                 "length": 3
@@ -143,7 +150,7 @@ def transpile(line,file):
             else:
                 if x[0] == "mut": length=3
                 else: length=2
-                if iterate >= length and iterate != len(x)-1 and _ != x[0]:
+                if iterate >= length and iterate != len(x)-1 and iterate != 0 :
                     if _ in variables:
                         f.write(_+",")
                     else:
@@ -185,7 +192,9 @@ with open('out.rs',"w") as f:
         macros = {}
         toinclude = []
         #f.write("#![allow(warnings)]\n")
+        f.write('static _POG_WHITESPACE: &str = " ";\n')
         f.write("fn main() {\n")
+        variables.update({"_POG_WHITESPACE":{"length":2}})
         for x in code.readlines():
             linenumber+=1
             transpile(x,f)
@@ -210,7 +219,7 @@ with open('out.rs',"w") as f:
                                 currentmac = _[0]
                                 if currentmac in used:
                                     macvar = []
-                                    f.write(f"fn {_[0]}(")
+                                    f.write(f"fn {_[0]}<'a>(")
                                     iterate = 0
                                     for variter in _:
                                         if iterate != 0 and iterate != len(_)-1:
@@ -228,7 +237,7 @@ with open('out.rs',"w") as f:
                                             if ret != True:
                                                 f.write(",")
                                         elif variter == "str":
-                                            f.write("&str")
+                                            f.write("&'a str")
                                             if ret != True:
                                                 f.write(",")
                                         elif variter == "ret":
@@ -253,9 +262,5 @@ with open('out.rs',"w") as f:
                                 except:
                                     transpile(_unsplit,f)
                 toinclude.remove(x)
-
-print("Compiling")
-os.system("rustc out.rs")
-print("Running")
-print("-------")
-os.system("./out")
+secondtime = time.perf_counter()
+print(f"Transpiled in {secondtime - firsttime:0.9f}s")
