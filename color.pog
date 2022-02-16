@@ -1,0 +1,49 @@
+std.pog include
+printbold string str noret macro
+\x1B[1m print
+string print
+\x1B[0m print
+endmac
+printcol string str color str noret macro
+_red red set
+_blue blue set
+_yellow yellow set
+color = _red if
+\x1B[31m print
+string print
+\x1B[0m print
+end
+color = _blue if
+\x1B[34m print
+string print
+\x1B[0m print
+end
+color = _yellow if
+\x1B[33m print
+string print
+\x1B[0m print
+end
+endmac
+printboldcol string str color str noret macro
+_red red set
+_blue blue set
+_yellow yellow set
+color = _red if
+\x1B[1m print
+\x1B[31m print
+string print
+\x1B[0m print
+end
+color = _blue if
+\x1B[1m print
+\x1B[34m print
+string print
+\x1B[0m print
+end
+color = _yellow if
+\x1B[1m print
+\x1B[33m print
+string print
+\x1B[0m print
+end
+endmac

@@ -1,0 +1,29 @@
+color.pog include
+math.pog include
+mut iterate 0 set
+mut iterate2 0 set
+howbig input
+howbig toint
+iterate < howbig while
+iterate2 < iterate while
+_POG_WHITESPACE print
+iterate2 1 add
+end
+iterate2 iterate2 sub
+o blue printboldcol
+iterate 1 add
+\n print
+end
+iterate2 iterate2 sub
+iterate > 0 while
+iterate2 < iterate while
+_POG_WHITESPACE print
+iterate2 1 add
+end
+iterate2 iterate2 sub
+o blue printboldcol
+iterate 1 sub
+\n print
+end
+o blue printboldcol
+\n print
