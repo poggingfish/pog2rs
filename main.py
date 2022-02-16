@@ -174,13 +174,13 @@ def transpile(line,file):
         for _ in x:
             if iterate != len(x)-1:
                 if _ in variables:
-                    f.write(_)
+                    f.write(_+",")
                 else:
                     try:
                         int(_)
-                        f.write(_)
+                        f.write(_+",")
                     except:
-                        f.write(f'"{_}"')
+                        f.write(f'"{_}",')
             iterate+=1
         f.write(");")
     f.write("\n")
@@ -261,6 +261,9 @@ with open('out.rs',"w") as f:
                                         transpile(_unsplit,f)
                                 except:
                                     transpile(_unsplit,f)
-                toinclude.remove(x)
+                    toinclude.remove(x)
 secondtime = time.perf_counter()
-print(f"Transpiled in {secondtime - firsttime:0.9f}s")
+fulltime = secondtime - firsttime
+microtime = fulltime*1000000
+print("Transpiled in " + "%.1f" % microtime + "μs")
+

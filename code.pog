@@ -1,3 +1,4 @@
 std.pog include
+color.pog include
 message Hello, world! set
-message println
+message red printboldcol
