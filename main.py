@@ -20,8 +20,7 @@ def transpile(line,file):
     try:
         if sys.argv[2] == "debugcom":
             f.write(f"//file: {currentfile}, line: {linenumber}, {command}")
-            if command != "include":
-                f.write("\n")
+            if command != "include":f.write("\n")
     except:
         pass
     if command == "print":
@@ -84,7 +83,12 @@ def transpile(line,file):
     elif command == "div":
         f.write(f"{x[0]}/={x[1]};")
     elif command == "if":
-        f.write(f"if {x[0]} == {x[1]}"+" {")
+        if x[1] == "=":
+            f.write(f"if {x[0]} == {x[2]}"+" {")
+        elif x[1] == ">":
+            f.write(f"if {x[0]} > {x[2]}"+" {")
+        elif x[1] == "<":
+            f.write(f"if {x[0]} < {x[2]}"+" {")
     elif command == "else":
         f.write("else {")
     elif command == "end":
@@ -112,8 +116,6 @@ def transpile(line,file):
             else:
                 f.write(f'return "{x[0]}"')
     elif command == "setret":
-        print(used)
-        print(x)
         if x[0] != "mut":
             used.append(x[1])
             f.write(f"let {x[0]} = {x[1]}(")
@@ -152,6 +154,12 @@ def transpile(line,file):
                             f.write(f'"{_}",')
                 iterate+=1
         f.write(");")
+    elif command == "input":
+        f.write(f"let mut {x[0]} = String::new();\n")
+        variables.update({x[0]:{"length":3}})
+        f.write(f'std::io::stdin().read_line(&mut {x[0]}).expect("Failed to read from stdin");')
+    elif command == "toint":
+        f.write(f'let {x[0]}: i32 = {x[0]}.trim().parse().expect("Error parsing number");')
     else:
         iterate = 0
         used.append(command)

@@ -1,10 +1,7 @@
 std.pog include
-math.pog include
-number retmult 10 10 setret
-number printint
-number retadd 10 10 setret
-number printint
-number retdiv 10 2 setret
-number printint
-number retsub 5 5 setret
-number printint
+numcheck input
+numcheck toint
+numcheck < 10 if
+printstring Your number is less than 10 set
+printstring println
+end
