@@ -10,6 +10,13 @@
 - [ ] Comments (Should be fairly easy)
 - [ ] Rewrite in something other than python....
 - [ ] Self Hosted ( Never gonna happen.... But maybe )
+### Usage
+Transpiling and running
+```
+python3 main.py program.pog
+rustc program.rs
+./program
+```
 ### Examples
 Hello world
 ```
