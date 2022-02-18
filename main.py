@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys,os, time
 global toinclude
 global included
@@ -7,6 +8,7 @@ global used
 linenumber = 0
 used = []
 included = []
+doneinclude = []
 firsttime = time.perf_counter()
 def transpile(line,file):
     global variables
@@ -20,8 +22,7 @@ def transpile(line,file):
     command = x[len(x)-1]
     try:
         if sys.argv[2] == "debugcom":
-            f.write(f"//file: {currentfile}, line: {linenumber}, command: {command}")
-            if command != "include":f.write("\n")
+            f.write(f"//file: {currentfile}, line: {linenumber}, command: {command}\n")
     except:
         pass
     if command == "print":
@@ -111,8 +112,6 @@ def transpile(line,file):
         if x[0] not in included:
             toinclude.append(x[0])
             included.append(x[0])
-        else:
-            pass
     elif command == "return":
         try:
             int(x[0])
@@ -122,9 +121,12 @@ def transpile(line,file):
                 f.write(f"return {x[0]}")
             else:
                 f.write(f'return "{x[0]}"')
+    elif command == "wait":
+        f.write(f"std::thread::sleep(std::time::Duration::from_millis({x[0]}));")
     elif command == "setret":
         if x[0] != "mut":
-            used.append(x[1])
+            if x not in used:
+                used.append(x[1])
             f.write(f"let {x[0]} = {x[1]}(")
             variables.update({
                 x[0]:{
@@ -132,7 +134,8 @@ def transpile(line,file):
                 }
             })
         else:
-            used.append(x[2])
+            if x not in used:
+                used.append(x[2])
             f.write(f"let mut {x[1]} = {x[2]}(")
             variables.update({
             x[0]:{
@@ -169,7 +172,8 @@ def transpile(line,file):
         f.write(f'let {x[0]}: i32 = {x[0]}.trim().parse().expect("Error parsing number");')
     else:
         iterate = 0
-        used.append(command)
+        if command not in used:
+            used.append(command)
         f.write(f"{command}(")
         for _ in x:
             if iterate != len(x)-1:
@@ -183,7 +187,8 @@ def transpile(line,file):
                         f.write(f'"{_}",')
             iterate+=1
         f.write(");")
-    f.write("\n")
+    if command != 'include':
+        f.write("\n")
 with open('out.rs',"w") as f:
     with open(sys.argv[1]) as code:
         linenumber = 0
@@ -217,7 +222,7 @@ with open('out.rs',"w") as f:
                             command=_[len(_)-1]
                             if command == "macro":
                                 currentmac = _[0]
-                                if currentmac in used:
+                                if currentmac in used and currentmac not in doneinclude:
                                     macvar = []
                                     f.write(f"fn {_[0]}<'a>(")
                                     iterate = 0
@@ -226,12 +231,12 @@ with open('out.rs',"w") as f:
                                             macvar.append(_[iterate])
                                         iterate+=1
                                     macros.update({
-                                        x[0]:{
+                                        currentmac:{
                                         "vartypes": macvar
                                         }})
                                     ret=False
                                     macvar=[]
-                                    for variter in macros[x[0]]["vartypes"]:
+                                    for variter in macros[currentmac]["vartypes"]:
                                         if variter == "int":
                                             f.write("i32")
                                             if ret != True:
@@ -253,15 +258,13 @@ with open('out.rs',"w") as f:
                                             f.write(f"{variter}: ")
                                     f.write("{\n")
                             elif command == "endmac":
-                                if currentmac in used:
+                                if currentmac in used and currentmac not in doneinclude:
                                     f.write("}\n")
+                                    doneinclude.append(currentmac)
                             else:
-                                try:
-                                    if currentmac in used:
-                                        transpile(_unsplit,f)
-                                except:
+                                if currentmac in used and currentmac not in doneinclude:
                                     transpile(_unsplit,f)
-                    toinclude.remove(x)
+            toinclude.remove(x)
 secondtime = time.perf_counter()
 fulltime = secondtime - firsttime
 microtime = fulltime*1000000

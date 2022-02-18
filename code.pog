@@ -1,4 +1,4 @@
 std.pog include
-color.pog include
-message Hello, world! set
-message red printboldcol
+math.pog include
+number retmult 10 10 setret
+number printint
