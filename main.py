@@ -189,7 +189,8 @@ def transpile(line,file):
         f.write(");")
     if command != 'include':
         f.write("\n")
-with open('out.rs',"w") as f:
+filename = sys.argv[1].split(".")[0]+".rs"
+with open(filename,"w") as f:
     with open(sys.argv[1]) as code:
         linenumber = 0
         currentfile = code.name
