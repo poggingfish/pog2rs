@@ -1,5 +1,5 @@
 # pog2rs
-## The Rust transpiler for the Pogcode Language  
+## The Rust transpiler for the Pogcode Language
 #### (Written in python)
 ### Features
 - Support for libraries (std.pog, math.pog, color.pog, etc)
@@ -7,7 +7,7 @@
 - Easy to learn
 ### TODO
 - [ ] Make main.py code a bit easier to read
-- [ ] Comments (Should be fairly easy)
+- [X] Comments (Should be fairly easy)
 - [ ] Rewrite in something other than python....
 - [ ] Self Hosted ( Never gonna happen.... But maybe )
 ### Usage

@@ -20,6 +20,8 @@ def transpile(line,file):
     f = file
     x = line.split()
     command = x[len(x)-1]
+    if x[0].startswith("#"):
+        return
     try:
         if sys.argv[2] == "debugcom":
             f.write(f"//file: {currentfile}, line: {linenumber}, command: {command}\n")
