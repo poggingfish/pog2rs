@@ -1,0 +1,15 @@
+number input
+number toint
+number < 10 if
+Number is less than 10 print
+\n print
+end
+else
+number = 10 if
+Number is 10 print
+end
+else
+Number is more than 10 print
+end
+\n print
+end

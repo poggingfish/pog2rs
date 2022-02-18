@@ -272,4 +272,10 @@ secondtime = time.perf_counter()
 fulltime = secondtime - firsttime
 microtime = fulltime*1000000
 print("Transpiled in " + "%.1f" % microtime + "μs")
-
+try:
+    if sys.argv[2] == "comrun":
+        print("Compiling and running")
+        os.system(f"rustc {sys.argv[1].split('.')[0]}.rs")
+        os.system(f"./{sys.argv[1].split('.')[0]}")
+except:
+    pass

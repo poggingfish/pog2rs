@@ -1,0 +1,4 @@
+../libs/math.pog include
+../libs/std.pog include
+result retdiv 10 2 setret
+result printint
