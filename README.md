@@ -12,7 +12,7 @@
 ### Examples
 Hello world
 ```
-Hello, world print
+Hello, world! print
 \n print
 ```
 Simple math (Should return 5)
