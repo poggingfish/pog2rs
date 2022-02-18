@@ -1,4 +1,0 @@
-std.pog include
-math.pog include
-number retmult 10 10 setret
-number printint
