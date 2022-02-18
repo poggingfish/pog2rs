@@ -5,5 +5,5 @@
 - Fast run time since it transpiles to rust
 - Easy to learn
 ### TODO
-- Make main.py code a bit easier to read
-- Support calling assembly from code using asm! on rust
+- [] Make main.py code a bit easier to read
+- [] Support calling assembly from code using asm! on rust
