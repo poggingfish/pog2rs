@@ -7,6 +7,11 @@ global currentfile
 global used
 linenumber = 0
 used = []
+compilervars = {
+    "_NEW_LINE":{
+        "value": "\n"
+    }
+}
 included = []
 doneinclude = []
 firsttime = time.perf_counter()
@@ -14,6 +19,7 @@ def transpile(line,file):
     global variables
     global toinclude
     global included
+    global compilervars
     global currentfile
     global used
     global linenumber
@@ -172,6 +178,16 @@ def transpile(line,file):
         f.write(f'std::io::stdin().read_line(&mut {x[0]}).expect("Failed to read from stdin");')
     elif command == "toint":
         f.write(f'let {x[0]}: i32 = {x[0]}.trim().parse().expect("Error parsing number");')
+    elif command == "setcom":
+        value = ""
+        iterate = 0
+        for _ in x:
+            if iterate != 0 and iterate < len(x)-1:
+                value+=_
+            iterate += 1
+        compilervars.update({x[0]:{"value":value}})
+    elif command == "rustcall":
+        f.write(compilervars[x[0]]["value"]);
     else:
         iterate = 0
         if command not in used:
@@ -189,7 +205,7 @@ def transpile(line,file):
                         f.write(f'"{_}",')
             iterate+=1
         f.write(");")
-    if command != 'include':
+    if command != 'include' and command != 'rustcall':
         f.write("\n")
 filename = sys.argv[1].split(".")[0]+".rs"
 with open(filename,"w") as f:
