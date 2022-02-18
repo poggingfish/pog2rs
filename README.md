@@ -31,6 +31,6 @@ Number is less than 10 print
 \n print
 end
 else
-Number is more than 10 printr
+Number is more than 10 print
 end
 ```
